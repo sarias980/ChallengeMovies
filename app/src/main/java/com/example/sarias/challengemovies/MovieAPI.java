@@ -1,6 +1,7 @@
 package com.example.sarias.challengemovies;
 
 import android.net.Uri;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -12,12 +13,11 @@ import java.util.ArrayList;
 public class MovieAPI {
     private final String BASE_URL = "http://api.themoviedb.org/4";
     private final String API_KEY = "93aea0c77bc168d8bbce3918cefefa45";
-    private final int PAGES = 5;
 
-    ArrayList<Movie> getPeliculesMesVistes(String pais) {
-        return doCall("discover", "movie", pais);
+    ArrayList<Movie> getPeliculesMesVistes(String pais, int page) {
+        return doCall("discover", "movie", pais, page);
     }
-    
+
     private String getUrlPage(String pais, String recurs, String tipus, int pagina) {
         Uri builtUri = Uri.parse(BASE_URL)
                 .buildUpon()
@@ -27,22 +27,22 @@ public class MovieAPI {
                 .appendQueryParameter("api_key", API_KEY)
                 .appendQueryParameter("page", String.valueOf(pagina))
                 .build();
+        Log.d("Url", builtUri.toString());
         return builtUri.toString();
     }
 
-    private ArrayList<Movie> doCall(String recurs, String tipus, String pais) {
+    private ArrayList<Movie> doCall(String recurs, String tipus, String pais, int page) {
         ArrayList<Movie> movies = new ArrayList<>();
 
-        for (int i = 0; i < PAGES; i++) {
-            try {
-                String url = getUrlPage(pais, recurs, tipus, i);
-                String JsonResponse = HttpUtils.get(url);
-                ArrayList<Movie> list = processJson(JsonResponse);
-                movies.addAll(list);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        try {
+            String url = getUrlPage(pais, recurs, tipus, page);
+            String JsonResponse = HttpUtils.get(url);
+            ArrayList<Movie> list = processJson(JsonResponse);
+            movies.addAll(list);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+
         return movies;
     }
 
