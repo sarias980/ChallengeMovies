@@ -11,31 +11,34 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class MovieAPI {
-    private final String BASE_URL = "http://api.themoviedb.org/4";
+    private final String BASE_URL = "http://api.themoviedb.org/3";
     private final String API_KEY = "93aea0c77bc168d8bbce3918cefefa45";
 
-    ArrayList<Movie> getPeliculesMesVistes(String pais, int page) {
-        return doCall("discover", "movie", pais, page);
+    ArrayList<Movie> getPeliculesMesVistes(int page) {
+        return doCall("movie", "popular", page, "");
+    }
+    ArrayList<Movie> getPeliculesByTitele(int page, String name) {
+        return doCall("search", "movie", page, name);
     }
 
-    private String getUrlPage(String pais, String recurs, String tipus, int pagina) {
+    private String getUrlPage(String recurs, String tipus, int pagina, String name) {
         Uri builtUri = Uri.parse(BASE_URL)
                 .buildUpon()
                 .appendPath(recurs)
                 .appendPath(tipus)
-                .appendQueryParameter("region", pais)
                 .appendQueryParameter("api_key", API_KEY)
+                .appendQueryParameter("query", name)
                 .appendQueryParameter("page", String.valueOf(pagina))
                 .build();
         Log.d("Url", builtUri.toString());
         return builtUri.toString();
     }
 
-    private ArrayList<Movie> doCall(String recurs, String tipus, String pais, int page) {
+    private ArrayList<Movie> doCall(String recurs, String tipus, int page, String name) {
         ArrayList<Movie> movies = new ArrayList<>();
 
         try {
-            String url = getUrlPage(pais, recurs, tipus, page);
+            String url = getUrlPage(recurs, tipus, page, name);
             String JsonResponse = HttpUtils.get(url);
             ArrayList<Movie> list = processJson(JsonResponse);
             movies.addAll(list);

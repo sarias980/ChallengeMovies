@@ -24,6 +24,11 @@ public class MoviesViewModel extends AndroidViewModel {
     private final MovieDao movieDao;
     private MutableLiveData<Boolean> loading;
     private int page = 1;
+    private String name = "";
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public void setPage(int page) {
         this.page = page;
@@ -64,15 +69,14 @@ public class MoviesViewModel extends AndroidViewModel {
         @Override
         protected ArrayList<Movie> doInBackground(Void... voids) {
 
-            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(
-                    app.getApplicationContext()
-            );
-            String pais = preferences.getString("pais", "es");
-
             MovieAPI api = new MovieAPI();
             ArrayList<Movie> result;
 
-            result = api.getPeliculesMesVistes(pais, 1);
+            if(name.equals("")){
+                result = api.getPeliculesMesVistes(page);
+            } else{
+                result = api.getPeliculesByTitele(page, name);
+            }
 
             Log.d("DEBUG", result != null ? result.toString() : null);
 
@@ -105,15 +109,15 @@ public class MoviesViewModel extends AndroidViewModel {
         @Override
         protected ArrayList<Movie> doInBackground(Void... voids) {
 
-            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(
-                    app.getApplicationContext()
-            );
-            String pais = preferences.getString("pais", "es");
-
             MovieAPI api = new MovieAPI();
             ArrayList<Movie> result;
 
-            result = api.getPeliculesMesVistes(pais, page);
+            if(name.equals("")){
+                result = api.getPeliculesMesVistes(page);
+            } else{
+                result = api.getPeliculesByTitele(page, name);
+            }
+
 
             Log.d("DEBUG", result != null ? result.toString() : null);
 
